@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>تسجيل الدخول - الطالب</title>
+  <style>
+    body {font-family:Arial,Helvetica,sans-serif;background:#f1f5f9;margin:0;display:flex;justify-content:center;align-items:center;height:100vh}
+    .card {background:#fff;padding:24px;border-radius:12px;box-shadow:0 6px 20px rgba(0,0,0,0.1);width:320px}
+    h2 {margin:0 0 20px;text-align:center;color:#0f172a}
+    label {display:block;margin-top:12px;font-weight:600;color:#334155}
+    input,select {width:100%;padding:10px;margin-top:6px;border:1px solid #cbd5e1;border-radius:8px}
+    button {width:100%;padding:12px;margin-top:20px;background:#2563eb;color:#fff;border:0;border-radius:8px;font-size:16px;cursor:pointer}
+    button:hover {background:#1d4ed8}
+    .note {margin-top:12px;font-size:14px;color:#64748b;text-align:center}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>تسجيل دخول الطالب</h2>
+    <label>الاسم</label>
+    <input type="text" id="studentName" placeholder="أدخل اسمك" />
+    <label>الصف الدراسي</label>
+    <select id="studentGrade">
+      <option value="">-- اختر الصف --</option>
+      <option value="1">أولى ثانوي</option>
+      <option value="2">تانية ثانوي</option>
+      <option value="3">تالتة ثانوي</option>
+    </select>
+    <button id="loginBtn">دخول</button>
+    <div id="status" class="note"></div>
+  </div>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBvBlbWmFxN1t0Sv0TkWfcYndvgzq6499Y",
+      authDomain: "edu-platform-35476.firebaseapp.com",
+      projectId: "edu-platform-35476",
+      storageBucket: "edu-platform-35476.firebasestorage.app",
+      messagingSenderId: "823570222456",
+      appId: "1:823570222456:web:656afb19407d955448cc8d",
+      measurementId: "G-V7DZRJR57F"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    const loginBtn = document.getElementById("loginBtn");
+    const statusDiv = document.getElementById("status");
+
+    loginBtn.addEventListener("click", async () => {
+      const name = document.getElementById("studentName").value.trim();
+      const grade = document.getElementById("studentGrade").value;
+
+      if (!name || !grade) {
+        statusDiv.innerText = "من فضلك أدخل الاسم والصف الدراسي";
+        return;
+      }
+
+      try {
+        // تسجيل الطالب في Firestore
+        const ref = await db.collection("students").add({
+          name: name,
+          grade: grade,
+          score: 0,
+          attendance: 0,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        // حفظ الـ ID في localStorage
+        localStorage.setItem("studentId", ref.id);
+
+        // تحويل لصفحة البروفايل
+        window.location.href = "profile.html";
+      } catch (e) {
+        statusDiv.innerText = "خطأ: " + e.message;
+      }
+    });
+  </script>
+</body>
+</html>
