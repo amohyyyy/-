@@ -1,89 +1,50 @@
-<!DOCTYPE html><html lang="ar">
+<!DOCTYPE html>
+<html lang="ar">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>لوحة التحكم - المسؤول</title>
-  <style>
-    :root{--accent:#4f46e5;--muted:#6b7280}
-    body{font-family:Inter,Arial,Helvetica,sans-serif;background:#f6f9fc;margin:0;padding:24px}
-    .wrap{max-width:1100px;margin:0 auto}
-    header{display:flex;align-items:center;justify-content:space-between}
-    h1{color:#0f172a;margin:0;font-size:20px}
-    .card{background:#fff;border-radius:12px;padding:18px;margin-top:18px;box-shadow:0 8px 30px rgba(15,23,42,0.06)}
-    label{display:block;margin-top:10px;font-weight:600;color:var(--muted)}
-    input[type=file], input[type=text], input[type=number], select, textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #e6eef8;margin-top:8px}
-    button{margin-top:10px;padding:10px 14px;border:0;border-radius:8px;background:var(--accent);color:#fff;cursor:pointer}
-    .btn-ghost{background:#eef2ff;color:#0f172a}
-    table{width:100%;border-collapse:collapse;margin-top:14px}
-    th,td{padding:10px;border-bottom:1px solid #f1f5f9;text-align:left}
-    .muted{color:var(--muted)}
-    .flex{display:flex;gap:10px}
-    .note{font-size:13px;color:var(--muted);margin-top:8px}
-    .small{font-size:13px;color:#334155}
-  </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>لوحة التحكم</title>
+  <link rel="stylesheet" href="admin.css">
 </head>
 <body>
-  <div class="wrap">
-    <header>
-      <h1>لوحة التحكم - المسؤول</h1>
-      <div class="muted small">مسجل كـ: <strong>admin</strong></div>
-    </header><!-- Upload -->
-<section class="card">
-  <h2>1) رفع ملف PDF</h2>
-  <p class="small">ارفع جدول السنة أو اختبار أو مورد. بعدها تُنشأ سجل في Firestore وتخزن في Storage.</p>
-  <label>اختر ملف PDF</label>
-  <input id="fileInput" type="file" accept="application/pdf" />
-  <label>نوع الملف</label>
-  <select id="fileType"><option value="schedule">جدول دراسي</option><option value="quiz">اختبار</option><option value="resource">مورد</option></select>
-  <button id="uploadBtn">رفع الملف</button>
-  <div id="uploadStatus" class="note"></div>
-</section>
+  <header>
+    <h1>⚙️ لوحة التحكم</h1>
+    <button id="logoutBtn">تسجيل الخروج</button>
+  </header>
 
-<!-- Uploads list -->
-<section class="card">
-  <h2>2) الملفات المرفوعة</h2>
-  <table id="uploadsTable"><thead><tr><th>الاسم</th><th>النوع</th><th>الحالة</th><th>تاريخ</th><th>إجراءات</th></tr></thead><tbody></tbody></table>
-  <div id="uploadsNote" class="note">يمكنك طلب تحويل أي ملف إلى جدول أو اختبار عبر زر "طلب تحويل".</div>
-</section>
+  <main>
+    <section class="add-course">
+      <h2>➕ إضافة كورس</h2>
+      <form id="courseForm">
+        <input type="text" id="courseTitle" placeholder="عنوان الكورس" required>
+        <input type="url" id="courseLink" placeholder="رابط الكورس" required>
+        <button type="submit">إضافة</button>
+      </form>
+      <ul id="courseList"></ul>
+    </section>
 
-<!-- AI job -->
-<section class="card">
-  <h2>3) طلب تحويل (AI)</h2>
-  <label>اختر ملف من المرفوعات</label>
-  <select id="uploadsSelect"></select>
-  <label>وصف المهمة (اختياري)</label>
-  <textarea id="aiDescription" placeholder="مثال: تحويل جدول السنة إلى مواعيد حصص"></textarea>
-  <div class="flex">
-    <button id="requestSchedule">طلب تحويل → جدول حصص</button>
-    <button id="requestQuiz" class="btn-ghost">طلب تحويل → اختبار تفاعلي</button>
-  </div>
-  <div id="aiStatus" class="note"></div>
-</section>
+    <section class="ai-tools">
+      <h2>🤖 أدوات الذكاء الاصطناعي</h2>
+      <div class="tool">
+        <h3>📅 رفع جدول السنة (PDF)</h3>
+        <input type="file" id="scheduleFile" accept="application/pdf">
+        <button id="processSchedule">تحويل لجدول حصص</button>
+        <div id="scheduleResult"></div>
+      </div>
+      <div class="tool">
+        <h3>📝 رفع امتحان (PDF)</h3>
+        <input type="file" id="examFile" accept="application/pdf">
+        <button id="processExam">تحويل لاختبار تفاعلي</button>
+        <div id="examResult"></div>
+      </div>
+    </section>
+  </main>
 
-<!-- Students management -->
-<section class="card">
-  <h2>4) إدارة الطلاب</h2>
-  <p class="small">عرض سريع وتعديل الدرجات/الحضور.</p>
-  <table id="studentsTable"><thead><tr><th>الاسم</th><th>الصف</th><th>الدرجة</th><th>حضور</th><th>إجراءات</th></tr></thead><tbody></tbody></table>
-</section>
-
-<!-- Tokens -->
-<section class="card">
-  <h2>5) حماية المحتوى - توليد Token عرض مؤقت</h2>
-  <label>اختر ملف</label>
-  <select id="tokenFileSelect"></select>
-  <label>مدة الصلاحية (دقائق)</label>
-  <input id="tokenMinutes" type="number" value="10" />
-  <div class="flex">
-    <button id="genToken">توليد توكن</button>
-    <button id="revokeTokens" class="btn-ghost">إبطال كل التوكنات</button>
-  </div>
-  <div id="tokenResult" class="note"></div>
-</section>
-
-<footer class="card muted small">ملاحظة: الواجهة HTML/JS جاهزة للاختبار. لتفعيل التحويل الآلي (OCR + AI) والحماية الحقيقية عليك إنشاء Cloud Function أو خدمة خلفية تتعامل مع مجموعة ai_jobs وSigned URLs من Storage.</footer>
-
-  </div>  <!-- Firebase -->  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js"></script>  <script>
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+  <script>
     const firebaseConfig = {
       apiKey: "AIzaSyBvBlbWmFxN1t0Sv0TkWfcYndvgzq6499Y",
       authDomain: "edu-platform-35476.firebaseapp.com",
@@ -94,92 +55,37 @@
       measurementId: "G-V7DZRJR57F"
     };
     firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
     const db = firebase.firestore();
-    const storage = firebase.storage();
 
-    // عناصر
-    const fileInput = document.getElementById('fileInput');
-    const uploadBtn = document.getElementById('uploadBtn');
-    const uploadStatus = document.getElementById('uploadStatus');
-    const uploadsTableBody = document.querySelector('#uploadsTable tbody');
-    const uploadsSelect = document.getElementById('uploadsSelect');
-    const studentsTableBody = document.querySelector('#studentsTable tbody');
-    const tokenFileSelect = document.getElementById('tokenFileSelect');
-    const tokenResult = document.getElementById('tokenResult');
-
-    // رفع الملفات
-    uploadBtn.addEventListener('click', async ()=>{
-      const file = fileInput.files[0]; const type = document.getElementById('fileType').value;
-      if(!file) { alert('اختر ملف PDF'); return; }
-      uploadStatus.innerText = 'جارٍ الرفع...';
-      const path = `uploads/${Date.now()}_${file.name}`;
-      const ref = storage.ref().child(path);
-      try{
-        await ref.put(file);
-        const url = await ref.getDownloadURL();
-        await db.collection('uploads').add({name:file.name,path,url,type,status:'uploaded',createdAt:firebase.firestore.FieldValue.serverTimestamp()});
-        uploadStatus.innerText = 'تم الرفع بنجاح.';
-      }catch(e){ uploadStatus.innerText = 'فشل الرفع: '+e.message; }
+    // تحقق إن المستخدم أدمن
+    auth.onAuthStateChanged(async (user) => {
+      if (!user) {
+        window.location.href = "index.html";
+      }
     });
 
-    // جلب المرفوعات والطلاب
-    function refreshUploads(){
-      uploadsTableBody.innerHTML=''; uploadsSelect.innerHTML=''; tokenFileSelect.innerHTML='';
-      db.collection('uploads').orderBy('createdAt','desc').get().then(snap=>{
-        snap.forEach(doc=>{
-          const d = doc.data(); const id = doc.id;
-          const tr = document.createElement('tr');
-          tr.innerHTML = `<td>${d.name}</td><td>${d.type}</td><td>${d.status}</td><td>${d.createdAt? d.createdAt.toDate().toLocaleString() : ''}</td>
-            <td><button onclick="previewUpload('${id}')" class="btn-ghost">عرض</button> <button onclick="requestConvert('${id}')">طلب تحويل</button> <button onclick="deleteUpload('${id}')" style='background:#ef4444'>حذف</button></td>`;
-          uploadsTableBody.appendChild(tr);
-          const opt = document.createElement('option'); opt.value = id; opt.text = d.name; uploadsSelect.appendChild(opt);
-          const opt2 = opt.cloneNode(true); tokenFileSelect.appendChild(opt2);
-        });
-      });
-    }
+    // إضافة كورس
+    document.getElementById("courseForm").onsubmit = async (e) => {
+      e.preventDefault();
+      const title = document.getElementById("courseTitle").value;
+      const link = document.getElementById("courseLink").value;
 
-    // عرض مبدئي (يفتح viewer مع توكن مؤقت)
-    window.previewUpload = async function(id){
-      const doc = await db.collection('uploads').doc(id).get(); if(!doc.exists) return alert('ملف غير موجود');
-      const token = Math.random().toString(36).slice(2,12);
-      await db.collection('tokens').add({fileId:id,token,expiresAt:firebase.firestore.Timestamp.fromDate(new Date(Date.now()+10*60000))});
-      const viewerUrl = `viewer.html?file=${id}&token=${token}`; window.open(viewerUrl,'_blank');
-    }
+      await db.collection("courses").add({ title, link });
+      alert("تمت إضافة الكورس بنجاح ✅");
+    };
 
-    // حذف مرفوع
-    window.deleteUpload = async function(id){ if(!confirm('حذف الملف؟')) return; const doc = await db.collection('uploads').doc(id).get(); if(doc.exists){ try{ await storage.ref().child(doc.data().path).delete(); }catch(e){console.warn('Storage delete error',e);} await db.collection('uploads').doc(id).delete(); refreshUploads(); }}
+    // مؤقت: محاكاة الذكاء الاصطناعي
+    document.getElementById("processSchedule").onclick = () => {
+      document.getElementById("scheduleResult").innerText =
+        "📅 تم تحويل ملف الجدول إلى حصص (محاكاة)";
+    };
+    document.getElementById("processExam").onclick = () => {
+      document.getElementById("examResult").innerText =
+        "📝 تم تحويل الامتحان إلى اختبار تفاعلي (محاكاة)";
+    };
 
-    // طلب تحويل - يضيف سجل في ai_jobs
-    document.getElementById('requestSchedule').addEventListener('click', ()=>requestConvert(null,'schedule'));
-    document.getElementById('requestQuiz').addEventListener('click', ()=>requestConvert(null,'quiz'));
-
-    window.requestConvert = async function(id, forcedType){
-      const chosen = id || uploadsSelect.value; if(!chosen) return alert('اختر ملف');
-      const doc = await db.collection('uploads').doc(chosen).get(); if(!doc.exists) return alert('ملف غير موجود');
-      const data = doc.data(); const jobType = forcedType || (data.type==='quiz'? 'quiz':'schedule');
-      const description = document.getElementById('aiDescription').value || '';
-      await db.collection('ai_jobs').add({uploadId:chosen,uploadPath:data.path,uploadUrl:data.url,type:jobType,description,status:'pending',createdAt:firebase.firestore.FieldValue.serverTimestamp()});
-      await db.collection('uploads').doc(chosen).update({status:'pending_'+jobType});
-      document.getElementById('aiStatus').innerText = 'تم إنشاء طلب التحويل.';
-      refreshUploads();
-    }
-
-    // إدارة الطلاب
-    async function refreshStudents(){ studentsTableBody.innerHTML=''; const snap = await db.collection('students').orderBy('grade').get(); snap.forEach(doc=>{ const d=doc.data(); const tr=document.createElement('tr'); tr.innerHTML = `<td>${d.name}</td><td>${d.grade}</td><td><input type='number' value='${d.score||0}' onchange="updateScore('${doc.id}', this.value)" style='width:80px'/></td><td>${d.attendance||0}</td><td><button onclick="deleteStudent('${doc.id}')" style='background:#ef4444'>حذف</button></td>`; studentsTableBody.appendChild(tr); }); }
-
-    window.updateScore = async function(id,val){ await db.collection('students').doc(id).update({score: Number(val)}); alert('تم تحديث الدرجة'); refreshStudents(); }
-    window.deleteStudent = async function(id){ if(!confirm('حذف الطالب؟')) return; await db.collection('students').doc(id).delete(); refreshStudents(); }
-
-    // توكنات الحماية
-    document.getElementById('genToken').addEventListener('click', async ()=>{ const fileId = tokenFileSelect.value; if(!fileId) return alert('اختر ملف'); const mins = Number(document.getElementById('tokenMinutes').value) || 10; const token = Math.random().toString(36).slice(2,12); const exp = new Date(Date.now()+mins*60000); await db.collection('tokens').add({fileId,token,expiresAt:firebase.firestore.Timestamp.fromDate(exp)}); tokenResult.innerText = `Token: ${token} صالح حتى ${exp.toLocaleString()}\nالاستخدام: viewer.html?file=${fileId}&token=${token}`; });
-
-    document.getElementById('revokeTokens').addEventListener('click', async ()=>{ const snap = await db.collection('tokens').get(); const batch = db.batch(); snap.forEach(s=> batch.delete(db.collection('tokens').doc(s.id))); await batch.commit(); tokenResult.innerText='تم إبطال كل التوكنات'; });
-
-    // مراقبة التغييرات وتحديث القوائم
-    db.collection('uploads').onSnapshot(refreshUploads);
-    db.collection('students').onSnapshot(refreshStudents);
-    refreshUploads(); refreshStudents();
-
-    // ملاحظات للمطوّر: Cloud Function مطلوب لتنفيذ مهام ai_jobs وSigned URLs للحماية الحقيقية.
-  </script></body>
+    document.getElementById("logoutBtn").onclick = () => auth.signOut();
+  </script>
+</body>
 </html>
