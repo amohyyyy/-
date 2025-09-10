@@ -1,88 +1,107 @@
-/* courses.css */
+/* تصميم صفحة الكورسات */
+
 body {
-  font-family: 'Segoe UI', sans-serif;
   margin: 0;
-  background: #f5f6fa;
+  font-family: "Cairo", sans-serif;
+  background: #f9f9f9;
+  direction: rtl;
 }
 
-header {
+.layout {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 15px 30px;
-  background: #007aff;
+  min-height: 100vh;
+}
+
+/* القائمة الجانبية */
+.sidebar {
+  width: 240px;
+  background: #111;
   color: #fff;
-}
-
-header h1 {
-  margin: 0;
-}
-
-header button {
-  background: #fff;
-  color: #007aff;
-  padding: 8px 16px;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: background 0.3s;
-}
-
-header button:hover {
-  background: #e5e5e5;
-}
-
-main {
+  display: flex;
+  flex-direction: column;
   padding: 20px;
 }
 
-.profile, .courses, .leaderboard {
-  background: #fff;
-  border-radius: 12px;
-  padding: 20px;
-  margin-bottom: 20px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-  transition: transform 0.3s;
+.sidebar .logo {
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: 22px;
 }
 
-.profile:hover, .courses:hover, .leaderboard:hover {
-  transform: translateY(-5px);
-}
-
-.courses ul {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 15px;
+.sidebar nav ul {
   list-style: none;
   padding: 0;
 }
 
-.courses li {
-  background: #fafafa;
-  border: 1px solid #eee;
-  border-radius: 10px;
-  padding: 15px;
-  text-align: center;
-  transition: all 0.3s;
+.sidebar nav ul li {
+  margin: 15px 0;
 }
 
-.courses li:hover {
-  background: #007aff;
-  color: #fff;
-  transform: scale(1.05);
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-table th, table td {
+.sidebar nav ul li a {
+  color: #bbb;
+  text-decoration: none;
+  display: block;
   padding: 10px;
-  text-align: center;
-  border-bottom: 1px solid #ddd;
+  border-radius: 8px;
+  transition: 0.3s;
 }
 
-table tr:hover {
-  background: #f1f1f1;
+.sidebar nav ul li a.active,
+.sidebar nav ul li a:hover {
+  background: #444;
+  color: #fff;
+}
+
+/* المحتوى الرئيسي */
+.content {
+  flex: 1;
+  padding: 30px;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 28px;
+}
+
+header p {
+  color: #555;
+}
+
+/* الكورسات */
+.courses {
+  margin-top: 30px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.course-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  transition: transform 0.3s;
+}
+
+.course-card:hover {
+  transform: translateY(-5px);
+}
+
+.course-card h3 {
+  margin-top: 0;
+}
+
+.course-card button {
+  margin-top: 10px;
+  padding: 10px 15px;
+  border: none;
+  background: #0071e3; /* زي أبل */
+  color: #fff;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.course-card button:hover {
+  background: #005bb5;
 }
