@@ -2,38 +2,23 @@
 <html lang="ar">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>تسجيل الدخول - الطالب</title>
-  <style>
-    body {font-family:Arial,Helvetica,sans-serif;background:#f1f5f9;margin:0;display:flex;justify-content:center;align-items:center;height:100vh}
-    .card {background:#fff;padding:24px;border-radius:12px;box-shadow:0 6px 20px rgba(0,0,0,0.1);width:320px}
-    h2 {margin:0 0 20px;text-align:center;color:#0f172a}
-    label {display:block;margin-top:12px;font-weight:600;color:#334155}
-    input,select {width:100%;padding:10px;margin-top:6px;border:1px solid #cbd5e1;border-radius:8px}
-    button {width:100%;padding:12px;margin-top:20px;background:#2563eb;color:#fff;border:0;border-radius:8px;font-size:16px;cursor:pointer}
-    button:hover {background:#1d4ed8}
-    .note {margin-top:12px;font-size:14px;color:#64748b;text-align:center}
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>تسجيل الدخول - المنصة التعليمية</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="card">
-    <h2>تسجيل دخول الطالب</h2>
-    <label>الاسم</label>
-    <input type="text" id="studentName" placeholder="أدخل اسمك" />
-    <label>الصف الدراسي</label>
-    <select id="studentGrade">
-      <option value="">-- اختر الصف --</option>
-      <option value="1">أولى ثانوي</option>
-      <option value="2">تانية ثانوي</option>
-      <option value="3">تالتة ثانوي</option>
-    </select>
+    <h2>تسجيل الدخول</h2>
+    <input type="email" id="email" placeholder="البريد الإلكتروني" />
+    <input type="password" id="password" placeholder="كلمة المرور" />
     <button id="loginBtn">دخول</button>
-    <div id="status" class="note"></div>
+    <p id="status"></p>
+    <p>ليس لديك حساب؟ <a href="signup.html">إنشاء حساب</a></p>
   </div>
 
   <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyBvBlbWmFxN1t0Sv0TkWfcYndvgzq6499Y",
@@ -45,39 +30,20 @@
       measurementId: "G-V7DZRJR57F"
     };
     firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
+    const auth = firebase.auth();
 
-    const loginBtn = document.getElementById("loginBtn");
-    const statusDiv = document.getElementById("status");
-
-    loginBtn.addEventListener("click", async () => {
-      const name = document.getElementById("studentName").value.trim();
-      const grade = document.getElementById("studentGrade").value;
-
-      if (!name || !grade) {
-        statusDiv.innerText = "من فضلك أدخل الاسم والصف الدراسي";
-        return;
-      }
+    document.getElementById("loginBtn").onclick = async () => {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      const status = document.getElementById("status");
 
       try {
-        // تسجيل الطالب في Firestore
-        const ref = await db.collection("students").add({
-          name: name,
-          grade: grade,
-          score: 0,
-          attendance: 0,
-          createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
-
-        // حفظ الـ ID في localStorage
-        localStorage.setItem("studentId", ref.id);
-
-        // تحويل لصفحة البروفايل
+        await auth.signInWithEmailAndPassword(email, password);
         window.location.href = "profile.html";
       } catch (e) {
-        statusDiv.innerText = "خطأ: " + e.message;
+        status.innerText = e.message;
       }
-    });
+    };
   </script>
 </body>
 </html>
