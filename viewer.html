@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>عرض الملف</title>
+  <style>
+    body {margin:0;font-family:Arial,Helvetica,sans-serif;background:#f8fafc;color:#0f172a}
+    header {padding:14px;background:#1e293b;color:#fff;text-align:center}
+    .wrap {padding:20px;text-align:center}
+    iframe {width:90%;height:85vh;border:0;border-radius:10px;box-shadow:0 4px 20px rgba(0,0,0,0.1)}
+    .error {color:#ef4444;font-size:18px;margin-top:40px}
+  </style>
+</head>
+<body>
+  <header><h2>عرض الملف</h2></header>
+  <div class="wrap">
+    <div id="status">جاري التحقق من الرابط...</div>
+    <iframe id="viewer" style="display:none"></iframe>
+  </div>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBvBlbWmFxN1t0Sv0TkWfcYndvgzq6499Y",
+      authDomain: "edu-platform-35476.firebaseapp.com",
+      projectId: "edu-platform-35476",
+      storageBucket: "edu-platform-35476.firebasestorage.app",
+      messagingSenderId: "823570222456",
+      appId: "1:823570222456:web:656afb19407d955448cc8d",
+      measurementId: "G-V7DZRJR57F"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    // استخراج المتغيرات من الرابط
+    const params = new URLSearchParams(window.location.search);
+    const fileId = params.get("file");
+    const token = params.get("token");
+
+    const statusDiv = document.getElementById("status");
+    const viewer = document.getElementById("viewer");
+
+    async function checkAccess() {
+      if (!fileId || !token) {
+        statusDiv.innerHTML = "<div class='error'>الرابط غير صالح</div>";
+        return;
+      }
+
+      try {
+        // تحقق من التوكن
+        const snap = await db.collection("tokens")
+          .where("fileId","==",fileId)
+          .where("token","==",token)
+          .get();
+
+        if (snap.empty) {
+          statusDiv.innerHTML = "<div class='error'>التوكن غير صحيح</div>";
+          return;
+        }
+
+        const data = snap.docs[0].data();
+        const exp = data.expiresAt.toDate();
+        if (new Date() > exp) {
+          statusDiv.innerHTML = "<div class='error'>انتهت صلاحية الرابط</div>";
+          return;
+        }
+
+        // جلب الملف من uploads
+        const fileDoc = await db.collection("uploads").doc(fileId).get();
+        if (!fileDoc.exists) {
+          statusDiv.innerHTML = "<div class='error'>الملف غير موجود</div>";
+          return;
+        }
+
+        const fileData = fileDoc.data();
+        statusDiv.style.display = "none";
+        viewer.src = fileData.url;
+        viewer.style.display = "block";
+
+      } catch (e) {
+        statusDiv.innerHTML = "<div class='error'>خطأ: "+e.message+"</div>";
+      }
+    }
+
+    checkAccess();
+  </script>
+</body>
+</html>
