@@ -1,0 +1,111 @@
+body {
+  margin: 0;
+  font-family: "Cairo", sans-serif;
+  background: #f9f9f9;
+  direction: rtl;
+}
+
+.layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* القائمة الجانبية */
+.sidebar {
+  width: 240px;
+  background: #111;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+}
+
+.sidebar .logo {
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: 22px;
+}
+
+.sidebar nav ul {
+  list-style: none;
+  padding: 0;
+}
+
+.sidebar nav ul li {
+  margin: 15px 0;
+}
+
+.sidebar nav ul li a {
+  color: #bbb;
+  text-decoration: none;
+  display: block;
+  padding: 10px;
+  border-radius: 8px;
+  transition: 0.3s;
+}
+
+.sidebar nav ul li a.active,
+.sidebar nav ul li a:hover {
+  background: #444;
+  color: #fff;
+}
+
+/* المحتوى */
+.content {
+  flex: 1;
+  padding: 30px;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 28px;
+}
+
+header p {
+  color: #555;
+  margin-bottom: 30px;
+}
+
+/* كارت البروفايل */
+.profile-card {
+  display: flex;
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  align-items: center;
+  gap: 30px;
+}
+
+.avatar-section {
+  text-align: center;
+}
+
+.avatar-section img {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 10px;
+  border: 3px solid #0071e3;
+}
+
+.info-section p {
+  margin: 10px 0;
+  font-size: 16px;
+}
+
+button {
+  margin-top: 15px;
+  padding: 10px 15px;
+  border: none;
+  background: #0071e3;
+  color: #fff;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+button:hover {
+  background: #005bb5;
+}
