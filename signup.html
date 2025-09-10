@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>إنشاء حساب - المنصة التعليمية</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="card">
+    <h2>إنشاء حساب جديد</h2>
+    <input type="email" id="email" placeholder="البريد الإلكتروني" />
+    <input type="password" id="password" placeholder="كلمة المرور" />
+    <select id="grade">
+      <option value="">-- اختر الصف --</option>
+      <option value="1">أولى ثانوي</option>
+      <option value="2">تانية ثانوي</option>
+      <option value="3">تالتة ثانوي</option>
+    </select>
+    <button id="signupBtn">تسجيل</button>
+    <p id="status"></p>
+    <p>لديك حساب؟ <a href="index.html">تسجيل الدخول</a></p>
+  </div>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBvBlbWmFxN1t0Sv0TkWfcYndvgzq6499Y",
+      authDomain: "edu-platform-35476.firebaseapp.com",
+      projectId: "edu-platform-35476",
+      storageBucket: "edu-platform-35476.firebasestorage.app",
+      messagingSenderId: "823570222456",
+      appId: "1:823570222456:web:656afb19407d955448cc8d",
+      measurementId: "G-V7DZRJR57F"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    document.getElementById("signupBtn").onclick = async () => {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      const grade = document.getElementById("grade").value;
+      const status = document.getElementById("status");
+
+      if (!email || !password || !grade) {
+        status.innerText = "من فضلك أدخل كل البيانات";
+        return;
+      }
+
+      try {
+        const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+        await db.collection("students").doc(userCredential.user.uid).set({
+          email,
+          grade,
+          score: 0,
+          attendance: 0,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        window.location.href = "profile.html";
+      } catch (e) {
+        status.innerText = e.message;
+      }
+    };
+  </script>
+</body>
+</html>
