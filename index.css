@@ -1,0 +1,65 @@
+/* index.css */
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background: #f9fafc;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.container {
+  background: #fff;
+  padding: 40px;
+  border-radius: 14px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  width: 100%;
+  max-width: 380px;
+  animation: slideIn 0.6s ease;
+}
+
+h2 {
+  margin-bottom: 20px;
+  text-align: center;
+  color: #111;
+}
+
+form input, form button {
+  width: 100%;
+  padding: 12px;
+  margin: 8px 0;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  font-size: 15px;
+  transition: all 0.3s ease;
+}
+
+form input:focus {
+  border-color: #007aff;
+  box-shadow: 0 0 5px rgba(0,122,255,0.3);
+}
+
+form button {
+  background: #007aff;
+  color: #fff;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+form button:hover {
+  background: #005ecb;
+}
+
+p {
+  text-align: center;
+}
+
+a {
+  color: #007aff;
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
