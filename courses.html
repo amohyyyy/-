@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>الكورسات</title>
+  <link rel="stylesheet" href="courses.css">
+</head>
+<body>
+  <header>
+    <h1>📚 كورسات الرياضيات</h1>
+    <button id="logoutBtn">تسجيل الخروج</button>
+  </header>
+
+  <main>
+    <section class="profile">
+      <h2>الملف الشخصي</h2>
+      <p><strong>البريد:</strong> <span id="userEmail"></span></p>
+      <p><strong>الصف:</strong> <span id="userGrade"></span></p>
+      <p><strong>الحضور:</strong> <span id="attendance"></span></p>
+      <p><strong>الدرجة:</strong> <span id="score"></span></p>
+    </section>
+
+    <section class="courses">
+      <h2>الكورسات المتاحة</h2>
+      <ul id="courseList">
+        <!-- الكورسات هتظهر هنا -->
+      </ul>
+    </section>
+
+    <section class="leaderboard">
+      <h2>🏆 جدول الترتيب</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>الطالب</th>
+            <th>الصف</th>
+            <th>الدرجة</th>
+          </tr>
+        </thead>
+        <tbody id="leaderboardTable">
+          <!-- البيانات من Firestore -->
+        </tbody>
+      </table>
+    </section>
+  </main>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBvBlbWmFxN1t0Sv0TkWfcYndvgzq6499Y",
+      authDomain: "edu-platform-35476.firebaseapp.com",
+      projectId: "edu-platform-35476",
+      storageBucket: "edu-platform-35476.firebasestorage.app",
+      messagingSenderId: "823570222456",
+      appId: "1:823570222456:web:656afb19407d955448cc8d",
+      measurementId: "G-V7DZRJR57F"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    const userEmail = document.getElementById("userEmail");
+    const userGrade = document.getElementById("userGrade");
+    const attendance = document.getElementById("attendance");
+    const score = document.getElementById("score");
+    const leaderboardTable = document.getElementById("leaderboardTable");
+    const courseList = document.getElementById("courseList");
+
+    auth.onAuthStateChanged(async (user) => {
+      if (user) {
+        const doc = await db.collection("students").doc(user.uid).get();
+        if (doc.exists) {
+          const data = doc.data();
+          userEmail.innerText = data.email;
+          userGrade.innerText = data.grade;
+          attendance.innerText = data.attendance;
+          score.innerText = data.score;
+        }
+
+        // تحميل الكورسات (مثال ثابت مؤقت)
+        const courses = [
+          { title: "التفاضل والتكامل", link: "#" },
+          { title: "الجبر المتقدم", link: "#" },
+          { title: "الهندسة التحليلية", link: "#" }
+        ];
+        courses.forEach(c => {
+          const li = document.createElement("li");
+          li.innerHTML = `<a href="${c.link}">${c.title}</a>`;
+          courseList.appendChild(li);
+        });
+
+        // تحميل جدول الترتيب
+        const snapshot = await db.collection("students").orderBy("score", "desc").limit(10).get();
+        snapshot.forEach(doc => {
+          const s = doc.data();
+          const tr = document.createElement("tr");
+          tr.innerHTML = `<td>${s.email}</td><td>${s.grade}</td><td>${s.score}</td>`;
+          leaderboardTable.appendChild(tr);
+        });
+
+      } else {
+        window.location.href = "index.html";
+      }
+    });
+
+    document.getElementById("logoutBtn").onclick = () => {
+      auth.signOut();
+    };
+  </script>
+</body>
+</html>
