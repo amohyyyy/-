@@ -2,24 +2,38 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>تسجيل دخول الطالب</title>
+  <title>بروفايل الطالب</title>
   <style>
-    body { font-family: Arial, sans-serif; background: #f0f4f8; display: flex; justify-content: center; align-items: center; height: 100vh; }
-    .container { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); width: 300px; }
-    input, select, button { width: 100%; margin: 10px 0; padding: 10px; border-radius: 5px; border: 1px solid #ccc; }
-    button { background: #4f46e5; color: white; border: none; cursor: pointer; }
+    body { font-family: Arial, sans-serif; background: #f9fafb; padding: 20px; }
+    .profile, .ranking, .attendance { background: white; padding: 20px; margin: 20px 0; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+    h2 { color: #4f46e5; }
+    table { width: 100%; border-collapse: collapse; }
+    table, th, td { border: 1px solid #ddd; }
+    th, td { padding: 10px; text-align: center; }
+    th { background: #f1f5f9; }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h2>تسجيل دخول الطالب</h2>
-    <input type="text" id="studentName" placeholder="اسم الطالب">
-    <select id="grade">
-      <option value="اولى">أولى ثانوي</option>
-      <option value="ثانية">ثانية ثانوي</option>
-      <option value="ثالثة">ثالثة ثانوي</option>
-    </select>
-    <button onclick="loginStudent()">دخول</button>
+  <div class="profile">
+    <h2>👤 بروفايل الطالب</h2>
+    <p><strong>الاسم:</strong> <span id="studentName"></span></p>
+    <p><strong>الصف:</strong> <span id="studentGrade"></span></p>
+  </div>  <div class="attendance">
+    <h2>📅 الحضور</h2>
+    <p>عدد الحصص التي حضرتها: <span id="attendanceCount">0</span></p>
+    <button onclick="markAttendance()">تسجيل حضور</button>
+  </div>  <div class="ranking">
+    <h2>🏆 جدول الترتيب حسب الدرجات</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>الاسم</th>
+          <th>الصف</th>
+          <th>الدرجة</th>
+        </tr>
+      </thead>
+      <tbody id="rankingTable"></tbody>
+    </table>
   </div>  <!-- Firebase -->  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>  <script>
     const firebaseConfig = {
       apiKey: "AIzaSyBvBlbWmFxN1t0Sv0TkWfcYndvgzq6499Y",
@@ -33,21 +47,37 @@
     const app = firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    function loginStudent() {
-      const name = document.getElementById('studentName').value;
-      const grade = document.getElementById('grade').value;
-      if(!name) { alert('ادخل اسم الطالب'); return; }
+    const name = localStorage.getItem('studentName');
+    const grade = localStorage.getItem('grade');
+    document.getElementById('studentName').innerText = name;
+    document.getElementById('studentGrade').innerText = grade;
 
-      // حفظ أو التحقق من الطالب في Firestore
-      db.collection('students').doc(name).set({ name, grade, createdAt: new Date() })
-      .then(() => {
-        alert('تم تسجيل الدخول بنجاح');
-        // تحويل الطالب لصفحة البروفايل
-        localStorage.setItem('studentName', name);
-        localStorage.setItem('grade', grade);
-        window.location.href = 'profile.html';
-      })
-      .catch(err => alert('حدث خطأ: '+err));
+    // تحميل الترتيب
+    db.collection('students').orderBy('score', 'desc').limit(10).get().then(snapshot => {
+      let rows = '';
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        rows += `<tr><td>${data.name}</td><td>${data.grade}</td><td>${data.score || 0}</td></tr>`;
+      });
+      document.getElementById('rankingTable').innerHTML = rows;
+    });
+
+    // تسجيل الحضور
+    function markAttendance() {
+      db.collection('students').doc(name).update({
+        attendance: firebase.firestore.FieldValue.increment(1)
+      }).then(() => {
+        db.collection('students').doc(name).get().then(doc => {
+          document.getElementById('attendanceCount').innerText = doc.data().attendance || 0;
+        });
+      });
     }
+
+    // تحميل عدد الحضور الحالي
+    db.collection('students').doc(name).get().then(doc => {
+      if(doc.exists) {
+        document.getElementById('attendanceCount').innerText = doc.data().attendance || 0;
+      }
+    });
   </script></body>
 </html>
