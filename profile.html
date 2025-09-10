@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>بروفايل الطالب</title>
+  <link rel="stylesheet" href="profile.css">
+</head>
+<body>
+  <div class="layout">
+
+    <!-- القائمة الجانبية -->
+    <aside class="sidebar">
+      <h2 class="logo">EduMath</h2>
+      <nav>
+        <ul>
+          <li><a href="courses.html">📚 الكورسات</a></li>
+          <li><a href="results.html">📊 النتائج</a></li>
+          <li><a href="profile.html" class="active">👤 بروفايل</a></li>
+          <li><a href="index.html" id="logoutBtn">🚪 تسجيل الخروج</a></li>
+        </ul>
+      </nav>
+    </aside>
+
+    <!-- المحتوى الرئيسي -->
+    <main class="content">
+      <header>
+        <h1>بروفايل الطالب 👤</h1>
+        <p>هنا تقدر تعدل بياناتك الشخصية وتختار صورتك الرمزية.</p>
+      </header>
+
+      <section class="profile-card">
+        <div class="avatar-section">
+          <img id="avatarPreview" src="default-avatar.png" alt="أفاتار الطالب">
+          <input type="file" id="avatarUpload" accept="image/*">
+        </div>
+        <div class="info-section">
+          <p><strong>الاسم:</strong> <span id="studentName">—</span></p>
+          <p><strong>البريد الإلكتروني:</strong> <span id="studentEmail">—</span></p>
+          <p><strong>السنة الدراسية:</strong> <span id="studentGrade">—</span></p>
+
+          <button id="saveChanges">💾 حفظ التغييرات</button>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBvBlbWmFxN1t0Sv0TkWfcYndvgzq6499Y",
+      authDomain: "edu-platform-35476.firebaseapp.com",
+      projectId: "edu-platform-35476",
+      storageBucket: "edu-platform-35476.firebasestorage.app",
+      messagingSenderId: "823570222456",
+      appId: "1:823570222456:web:656afb19407d955448cc8d",
+      measurementId: "G-V7DZRJR57F"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+    const storage = firebase.storage();
+
+    // حماية الصفحة: لو مفيش مستخدم يرجع للوجين
+    auth.onAuthStateChanged(async (user) => {
+      if (!user) {
+        window.location.href = "index.html";
+      } else {
+        document.getElementById("studentEmail").innerText = user.email;
+
+        // قراءة بيانات الطالب من Firestore
+        const doc = await db.collection("students").doc(user.uid).get();
+        if (doc.exists) {
+          const data = doc.data();
+          document.getElementById("studentName").innerText = data.name || "بدون اسم";
+          document.getElementById("studentGrade").innerText = data.grade || "—";
+          if (data.avatarUrl) {
+            document.getElementById("avatarPreview").src = data.avatarUrl;
+          }
+        }
+      }
+    });
+
+    // رفع صورة أفاتار جديدة
+    document.getElementById("avatarUpload").addEventListener("change", async (e) => {
+      const file = e.target.files[0];
+      const user = auth.currentUser;
+      if (file && user) {
+        const storageRef = storage.ref(`avatars/${user.uid}`);
+        await storageRef.put(file);
+        const url = await storageRef.getDownloadURL();
+        document.getElementById("avatarPreview").src = url;
+        await db.collection("students").doc(user.uid).set({ avatarUrl: url }, { merge: true });
+      }
+    });
+
+    // زر حفظ التغييرات (ممكن نضيف تعديل بيانات لاحقًا)
+    document.getElementById("saveChanges").onclick = () => {
+      alert("تم حفظ التغييرات ✅");
+    };
+
+    // زر تسجيل الخروج
+    document.getElementById("logoutBtn").onclick = async (e) => {
+      e.preventDefault();
+      await auth.signOut();
+      window.location.href = "index.html";
+    };
+  </script>
+</body>
+</html>
