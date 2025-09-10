@@ -1,28 +1,31 @@
 <!DOCTYPE html>
 <html lang="ar">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>عرض الملف</title>
-  <style>
-    body {margin:0;font-family:Arial,Helvetica,sans-serif;background:#f8fafc;color:#0f172a}
-    header {padding:14px;background:#1e293b;color:#fff;text-align:center}
-    .wrap {padding:20px;text-align:center}
-    iframe {width:90%;height:85vh;border:0;border-radius:10px;box-shadow:0 4px 20px rgba(0,0,0,0.1)}
-    .error {color:#ef4444;font-size:18px;margin-top:40px}
-  </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>عرض المحتوى</title>
+  <link rel="stylesheet" href="viewer.css">
 </head>
 <body>
-  <header><h2>عرض الملف</h2></header>
-  <div class="wrap">
-    <div id="status">جاري التحقق من الرابط...</div>
-    <iframe id="viewer" style="display:none"></iframe>
-  </div>
+  <header>
+    <h1>📖 محتوى الكورس</h1>
+    <button id="backBtn">🔙 الرجوع للكورسات</button>
+    <button id="logoutBtn">🚪 تسجيل الخروج</button>
+  </header>
+
+  <main>
+    <section class="course-content">
+      <h2 id="courseTitle">عنوان الكورس</h2>
+      <div id="courseMaterial">
+        <!-- المادة التعليمية تظهر هنا -->
+      </div>
+    </section>
+  </main>
 
   <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js"></script>
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyBvBlbWmFxN1t0Sv0TkWfcYndvgzq6499Y",
@@ -34,59 +37,43 @@
       measurementId: "G-V7DZRJR57F"
     };
     firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
     const db = firebase.firestore();
 
-    // استخراج المتغيرات من الرابط
-    const params = new URLSearchParams(window.location.search);
-    const fileId = params.get("file");
-    const token = params.get("token");
+    // استرجاع بيانات الكورس من الرابط (query param)
+    const urlParams = new URLSearchParams(window.location.search);
+    const courseId = urlParams.get("id");
 
-    const statusDiv = document.getElementById("status");
-    const viewer = document.getElementById("viewer");
+    const courseTitle = document.getElementById("courseTitle");
+    const courseMaterial = document.getElementById("courseMaterial");
 
-    async function checkAccess() {
-      if (!fileId || !token) {
-        statusDiv.innerHTML = "<div class='error'>الرابط غير صالح</div>";
-        return;
+    auth.onAuthStateChanged(async (user) => {
+      if (!user) {
+        window.location.href = "index.html";
+      } else {
+        if (courseId) {
+          const doc = await db.collection("courses").doc(courseId).get();
+          if (doc.exists) {
+            const data = doc.data();
+            courseTitle.innerText = data.title;
+
+            // هنا نعرض المادة (مثال: فيديو أو رابط)
+            if (data.link.includes("youtube")) {
+              courseMaterial.innerHTML = `<iframe width="100%" height="400" src="${data.link.replace("watch?v=", "embed/")}" frameborder="0" allowfullscreen></iframe>`;
+            } else if (data.link.endsWith(".pdf")) {
+              courseMaterial.innerHTML = `<embed src="${data.link}" width="100%" height="600px" type="application/pdf">`;
+            } else {
+              courseMaterial.innerHTML = `<a href="${data.link}" target="_blank">عرض المادة</a>`;
+            }
+          }
+        }
       }
+    });
 
-      try {
-        // تحقق من التوكن
-        const snap = await db.collection("tokens")
-          .where("fileId","==",fileId)
-          .where("token","==",token)
-          .get();
-
-        if (snap.empty) {
-          statusDiv.innerHTML = "<div class='error'>التوكن غير صحيح</div>";
-          return;
-        }
-
-        const data = snap.docs[0].data();
-        const exp = data.expiresAt.toDate();
-        if (new Date() > exp) {
-          statusDiv.innerHTML = "<div class='error'>انتهت صلاحية الرابط</div>";
-          return;
-        }
-
-        // جلب الملف من uploads
-        const fileDoc = await db.collection("uploads").doc(fileId).get();
-        if (!fileDoc.exists) {
-          statusDiv.innerHTML = "<div class='error'>الملف غير موجود</div>";
-          return;
-        }
-
-        const fileData = fileDoc.data();
-        statusDiv.style.display = "none";
-        viewer.src = fileData.url;
-        viewer.style.display = "block";
-
-      } catch (e) {
-        statusDiv.innerHTML = "<div class='error'>خطأ: "+e.message+"</div>";
-      }
-    }
-
-    checkAccess();
+    document.getElementById("backBtn").onclick = () => {
+      window.location.href = "courses.html";
+    };
+    document.getElementById("logoutBtn").onclick = () => auth.signOut();
   </script>
 </body>
 </html>
