@@ -3,21 +3,23 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>إنشاء حساب - المنصة التعليمية</title>
-  <link rel="stylesheet" href="style.css">
+  <title>إنشاء حساب</title>
+  <link rel="stylesheet" href="signup.css">
 </head>
 <body>
-  <div class="card">
+  <div class="container">
     <h2>إنشاء حساب جديد</h2>
-    <input type="email" id="email" placeholder="البريد الإلكتروني" />
-    <input type="password" id="password" placeholder="كلمة المرور" />
-    <select id="grade">
-      <option value="">-- اختر الصف --</option>
-      <option value="1">أولى ثانوي</option>
-      <option value="2">تانية ثانوي</option>
-      <option value="3">تالتة ثانوي</option>
-    </select>
-    <button id="signupBtn">تسجيل</button>
+    <form id="signupForm">
+      <input type="email" id="email" placeholder="البريد الإلكتروني" required>
+      <input type="password" id="password" placeholder="كلمة المرور" required>
+      <select id="grade" required>
+        <option value="">-- اختر الصف --</option>
+        <option value="1">أولى ثانوي</option>
+        <option value="2">تانية ثانوي</option>
+        <option value="3">تالتة ثانوي</option>
+      </select>
+      <button type="submit">تسجيل</button>
+    </form>
     <p id="status"></p>
     <p>لديك حساب؟ <a href="index.html">تسجيل الدخول</a></p>
   </div>
@@ -40,29 +42,25 @@
     const auth = firebase.auth();
     const db = firebase.firestore();
 
-    document.getElementById("signupBtn").onclick = async () => {
+    document.getElementById("signupForm").onsubmit = async (e) => {
+      e.preventDefault();
       const email = document.getElementById("email").value;
       const password = document.getElementById("password").value;
       const grade = document.getElementById("grade").value;
       const status = document.getElementById("status");
 
-      if (!email || !password || !grade) {
-        status.innerText = "من فضلك أدخل كل البيانات";
-        return;
-      }
-
       try {
-        const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-        await db.collection("students").doc(userCredential.user.uid).set({
+        const user = await auth.createUserWithEmailAndPassword(email, password);
+        await db.collection("students").doc(user.user.uid).set({
           email,
           grade,
           score: 0,
           attendance: 0,
           createdAt: firebase.firestore.FieldValue.serverTimestamp()
         });
-        window.location.href = "profile.html";
-      } catch (e) {
-        status.innerText = e.message;
+        window.location.href = "courses.html";
+      } catch (err) {
+        status.innerText = err.message;
       }
     };
   </script>
