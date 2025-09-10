@@ -1,40 +1,27 @@
-<!DOCTYPE html><html lang="ar">
+<!DOCTYPE html>
+<html lang="ar">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>بروفايل الطالب</title>
-  <style>
-    body { font-family: Arial, sans-serif; background: #f9fafb; padding: 20px; }
-    .profile, .ranking, .attendance { background: white; padding: 20px; margin: 20px 0; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
-    h2 { color: #4f46e5; }
-    table { width: 100%; border-collapse: collapse; }
-    table, th, td { border: 1px solid #ddd; }
-    th, td { padding: 10px; text-align: center; }
-    th { background: #f1f5f9; }
-  </style>
+  <title>ملفي الشخصي</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="profile">
-    <h2>👤 بروفايل الطالب</h2>
-    <p><strong>الاسم:</strong> <span id="studentName"></span></p>
-    <p><strong>الصف:</strong> <span id="studentGrade"></span></p>
-  </div>  <div class="attendance">
-    <h2>📅 الحضور</h2>
-    <p>عدد الحصص التي حضرتها: <span id="attendanceCount">0</span></p>
-    <button onclick="markAttendance()">تسجيل حضور</button>
-  </div>  <div class="ranking">
-    <h2>🏆 جدول الترتيب حسب الدرجات</h2>
-    <table>
-      <thead>
-        <tr>
-          <th>الاسم</th>
-          <th>الصف</th>
-          <th>الدرجة</th>
-        </tr>
-      </thead>
-      <tbody id="rankingTable"></tbody>
-    </table>
-  </div>  <!-- Firebase -->  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>  <script>
+  <div class="card">
+    <h2>ملفي الشخصي</h2>
+    <p id="email"></p>
+    <p id="grade"></p>
+    <p id="score"></p>
+    <p id="attendance"></p>
+    <button id="attendanceBtn">تسجيل حضور</button>
+    <button id="logoutBtn">تسجيل خروج</button>
+  </div>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+  <script>
     const firebaseConfig = {
       apiKey: "AIzaSyBvBlbWmFxN1t0Sv0TkWfcYndvgzq6499Y",
       authDomain: "edu-platform-35476.firebaseapp.com",
@@ -44,40 +31,36 @@
       appId: "1:823570222456:web:656afb19407d955448cc8d",
       measurementId: "G-V7DZRJR57F"
     };
-    const app = firebase.initializeApp(firebaseConfig);
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
     const db = firebase.firestore();
 
-    const name = localStorage.getItem('studentName');
-    const grade = localStorage.getItem('grade');
-    document.getElementById('studentName').innerText = name;
-    document.getElementById('studentGrade').innerText = grade;
-
-    // تحميل الترتيب
-    db.collection('students').orderBy('score', 'desc').limit(10).get().then(snapshot => {
-      let rows = '';
-      snapshot.forEach(doc => {
-        const data = doc.data();
-        rows += `<tr><td>${data.name}</td><td>${data.grade}</td><td>${data.score || 0}</td></tr>`;
-      });
-      document.getElementById('rankingTable').innerHTML = rows;
-    });
-
-    // تسجيل الحضور
-    function markAttendance() {
-      db.collection('students').doc(name).update({
-        attendance: firebase.firestore.FieldValue.increment(1)
-      }).then(() => {
-        db.collection('students').doc(name).get().then(doc => {
-          document.getElementById('attendanceCount').innerText = doc.data().attendance || 0;
-        });
-      });
-    }
-
-    // تحميل عدد الحضور الحالي
-    db.collection('students').doc(name).get().then(doc => {
-      if(doc.exists) {
-        document.getElementById('attendanceCount').innerText = doc.data().attendance || 0;
+    auth.onAuthStateChanged(async user => {
+      if (!user) {
+        window.location.href = "index.html";
+        return;
       }
+
+      const doc = await db.collection("students").doc(user.uid).get();
+      const data = doc.data();
+
+      document.getElementById("email").innerText = "البريد: " + data.email;
+      document.getElementById("grade").innerText = "الصف: " + data.grade;
+      document.getElementById("score").innerText = "الدرجات: " + data.score;
+      document.getElementById("attendance").innerText = "الحضور: " + data.attendance;
+
+      document.getElementById("attendanceBtn").onclick = async () => {
+        await db.collection("students").doc(user.uid).update({
+          attendance: data.attendance + 1
+        });
+        location.reload();
+      };
+
+      document.getElementById("logoutBtn").onclick = async () => {
+        await auth.signOut();
+        window.location.href = "index.html";
+      };
     });
-  </script></body>
+  </script>
+</body>
 </html>
