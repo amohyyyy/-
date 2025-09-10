@@ -1,0 +1,53 @@
+<!DOCTYPE html><html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>تسجيل دخول الطالب</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f0f4f8; display: flex; justify-content: center; align-items: center; height: 100vh; }
+    .container { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); width: 300px; }
+    input, select, button { width: 100%; margin: 10px 0; padding: 10px; border-radius: 5px; border: 1px solid #ccc; }
+    button { background: #4f46e5; color: white; border: none; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>تسجيل دخول الطالب</h2>
+    <input type="text" id="studentName" placeholder="اسم الطالب">
+    <select id="grade">
+      <option value="اولى">أولى ثانوي</option>
+      <option value="ثانية">ثانية ثانوي</option>
+      <option value="ثالثة">ثالثة ثانوي</option>
+    </select>
+    <button onclick="loginStudent()">دخول</button>
+  </div>  <!-- Firebase -->  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBvBlbWmFxN1t0Sv0TkWfcYndvgzq6499Y",
+      authDomain: "edu-platform-35476.firebaseapp.com",
+      projectId: "edu-platform-35476",
+      storageBucket: "edu-platform-35476.firebasestorage.app",
+      messagingSenderId: "823570222456",
+      appId: "1:823570222456:web:656afb19407d955448cc8d",
+      measurementId: "G-V7DZRJR57F"
+    };
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    function loginStudent() {
+      const name = document.getElementById('studentName').value;
+      const grade = document.getElementById('grade').value;
+      if(!name) { alert('ادخل اسم الطالب'); return; }
+
+      // حفظ أو التحقق من الطالب في Firestore
+      db.collection('students').doc(name).set({ name, grade, createdAt: new Date() })
+      .then(() => {
+        alert('تم تسجيل الدخول بنجاح');
+        // تحويل الطالب لصفحة البروفايل
+        localStorage.setItem('studentName', name);
+        localStorage.setItem('grade', grade);
+        window.location.href = 'profile.html';
+      })
+      .catch(err => alert('حدث خطأ: '+err));
+    }
+  </script></body>
+</html>
