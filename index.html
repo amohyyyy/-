@@ -1,152 +1,138 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar">
 <head>
   <meta charset="UTF-8">
+  <title>منصة مكسرات التعليمية</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>مكسرات - منصة تعليمية</title>
   <style>
-    body {
-      margin: 0;
-      font-family: "Tajawal", sans-serif;
-      background: linear-gradient(to bottom right, #fffaf5, #fff1eb);
-      color: #1f2937;
-    }
-    /* --- النافبار --- */
-    nav {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 15px 40px;
-      background: rgba(255, 255, 255, 0.9);
-      backdrop-filter: blur(8px);
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-      position: sticky;
-      top: 0;
-      z-index: 50;
-    }
-    nav h1 {
-      font-size: 26px;
-      font-weight: 800;
-      color: #d97706;
-    }
-    nav h1 span { color: #b45309; }
-    nav a {
-      margin-left: 20px;
-      text-decoration: none;
-      color: #374151;
-      font-size: 15px;
-      font-weight: 500;
-    }
-    nav a:hover { color: #d97706; }
-
-    /* --- هيرو --- */
-    .hero {
-      text-align: center;
-      padding: 100px 20px 80px;
-      background: url('https://www.transparenttextures.com/patterns/clean-gray-paper.png');
-    }
-    .hero h2 {
-      font-size: 42px;
-      font-weight: 900;
-      margin-bottom: 20px;
-      color: #b45309;
-    }
-    .hero p {
-      max-width: 650px;
-      margin: 0 auto 35px;
-      color: #4b5563;
-      font-size: 18px;
-      line-height: 1.8;
-    }
-    .btn {
-      padding: 14px 28px;
-      border-radius: 10px;
-      text-decoration: none;
-      font-weight: bold;
-      color: #fff;
-      margin: 0 8px;
-      font-size: 15px;
-      transition: all 0.3s ease;
-      display: inline-block;
-    }
-    .btn-gold { background: #d97706; }
-    .btn-gold:hover { background: #b45309; transform: scale(1.05); }
-    .btn-brown { background: #92400e; }
-    .btn-brown:hover { background: #78350f; transform: scale(1.05); }
-
-    /* --- مساحة المحتوى الفارغ --- */
-    .content-placeholder {
-      max-width: 1000px;
-      margin: 60px auto;
-      padding: 50px 25px;
-      background: #fff;
-      border-radius: 16px;
-      box-shadow: 0 6px 16px rgba(0,0,0,0.08);
-      text-align: center;
-    }
-    .content-placeholder h3 {
-      font-size: 24px;
-      margin-bottom: 15px;
-      color: #92400e;
-    }
-    .content-placeholder p {
-      color: #6b7280;
-      font-size: 16px;
-    }
-
-    /* --- الفوتر --- */
-    footer {
-      text-align: center;
-      padding: 25px;
-      background: #fff7ed;
-      margin-top: 80px;
-      color: #78350f;
-      font-size: 15px;
-      border-top: 1px solid #fcd34d;
-    }
-
-    /* --- أنيميشن دخول --- */
-    .fade-in {
-      opacity: 0;
-      transform: translateY(20px);
-      animation: fadeInUp 1s forwards;
-    }
-    @keyframes fadeInUp {
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
+    body { font-family: 'Cairo', sans-serif; background:#f9f5f0; margin:0; padding:0; }
+    header { background:#6b4226; color:#fff; padding:15px; text-align:center; }
+    nav a { color:white; margin:0 15px; text-decoration:none; }
+    section { padding:40px; text-align:center; }
+    input, button { padding:10px; margin:5px; border-radius:8px; border:1px solid #ccc; }
+    button { background:#6b4226; color:#fff; cursor:pointer; }
+    button:hover { background:#8c5a39; }
+    .hidden { display:none; }
+    .card { background:#fff; padding:20px; margin:20px auto; max-width:500px; border-radius:15px; box-shadow:0 4px 10px rgba(0,0,0,0.1); }
   </style>
 </head>
 <body>
-  <!-- نافبار -->
-  <nav>
-    <h1>م<span>كسرات</span></h1>
-    <div>
-      <a href="#">الرئيسية</a>
-      <a href="#">المحتوى</a>
-    <a href="admin.html" class="btn btn-brown">لوحة الأدمن</a>
-    </div>
-  </nav>
+  <header>
+    <h1>🌰 منصة مكسرات التعليمية</h1>
+    <nav>
+      <a href="#" onclick="showSection('home')">الرئيسية</a>
+      <a href="#" onclick="showSection('courses')">الكورسات</a>
+      <a href="#" onclick="showSection('auth')">تسجيل الدخول</a>
+      <a href="#" onclick="showSection('admin')">لوحة التحكم</a>
+    </nav>
+  </header>
 
-  <!-- الهيرو -->
-  <section class="hero fade-in">
-    <h2>📚 أهلاً بك في <span>مكسرات</span></h2>
-    <p>منصة تعليمية ذكية، بسيطة، وسهلة الاستخدام. هنا يمكنك نشر المحتوى التعليمي، إنشاء اختبارات تفاعلية، ومتابعة النتائج بسهولة.</p>
-    <a href="#" class="btn btn-gold">ابدأ الآن</a>
-    <a href="#" class="btn btn-brown">لوحة الأدمن</a>
+  <!-- الرئيسية -->
+  <section id="home" class="card">
+    <h2>أهلاً بك 👋</h2>
+    <p>منصة تعليمية لنشر الكورسات والاختبارات التفاعلية.</p>
   </section>
 
-  <!-- محتوى مؤقت -->
-  <section class="content-placeholder fade-in">
-    <h3>🚀 هنا سيكون المحتوى</h3>
-    <p>صفحات الدروس، الاختبارات، والنتائج ستظهر هنا بعد ربط المنصة بالقاعدة.</p>
+  <!-- الكورسات -->
+  <section id="courses" class="card hidden">
+    <h2>📚 الكورسات</h2>
+    <div id="coursesList">جارِ التحميل...</div>
   </section>
 
-  <!-- الفوتر -->
-  <footer>
-    © 2025 منصة مكسرات. جميع الحقوق محفوظة.
-  </footer>
+  <!-- تسجيل / دخول -->
+  <section id="auth" class="card hidden">
+    <h2>🔑 تسجيل / دخول</h2>
+    <input type="email" id="email" placeholder="البريد الإلكتروني"><br>
+    <input type="password" id="password" placeholder="كلمة المرور"><br>
+    <button onclick="login()">تسجيل دخول</button>
+    <button onclick="signup()">تسجيل جديد</button>
+    <p id="authMsg"></p>
+  </section>
+
+  <!-- لوحة تحكم الأدمن -->
+  <section id="admin" class="card hidden">
+    <h2>⚙️ لوحة التحكم</h2>
+    <p>إضافة كورسات جديدة</p>
+    <input type="text" id="courseTitle" placeholder="عنوان الكورس"><br>
+    <textarea id="courseDesc" placeholder="وصف الكورس"></textarea><br>
+    <button onclick="addCourse()">إضافة الكورس</button>
+    <div id="adminMsg"></div>
+  </section>
+
+  <!-- Firebase & سكريبت -->
+  <script type="module">
+    // تهيئة Firebase
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } 
+      from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
+    import { getFirestore, collection, addDoc, getDocs } 
+      from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBvBlbWmFxN1t0Sv0TkWfcYndvgzq6499Y",
+      authDomain: "edu-platform-35476.firebaseapp.com",
+      projectId: "edu-platform-35476",
+      storageBucket: "edu-platform-35476.firebasestorage.app",
+      messagingSenderId: "823570222456",
+      appId: "1:823570222456:web:656afb19407d955448cc8d",
+      measurementId: "G-V7DZRJR57F"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // إظهار/إخفاء أقسام
+    window.showSection = function(id) {
+      document.querySelectorAll("section").forEach(s => s.classList.add("hidden"));
+      document.getElementById(id).classList.remove("hidden");
+    }
+
+    // تسجيل جديد
+    window.signup = function() {
+      const email = document.getElementById("email").value;
+      const pass = document.getElementById("password").value;
+      createUserWithEmailAndPassword(auth, email, pass)
+        .then(() => document.getElementById("authMsg").innerText = "✅ تم إنشاء الحساب")
+        .catch(err => document.getElementById("authMsg").innerText = "❌ " + err.message);
+    }
+
+    // تسجيل دخول
+    window.login = function() {
+      const email = document.getElementById("email").value;
+      const pass = document.getElementById("password").value;
+      signInWithEmailAndPassword(auth, email, pass)
+        .then(() => {
+          document.getElementById("authMsg").innerText = "✅ تم تسجيل الدخول";
+          showSection("courses");
+          loadCourses();
+        })
+        .catch(err => document.getElementById("authMsg").innerText = "❌ " + err.message);
+    }
+
+    // إضافة كورس جديد
+    window.addCourse = async function() {
+      const title = document.getElementById("courseTitle").value;
+      const desc = document.getElementById("courseDesc").value;
+      try {
+        await addDoc(collection(db, "courses"), { title, desc });
+        document.getElementById("adminMsg").innerText = "✅ تم إضافة الكورس";
+        loadCourses();
+      } catch (err) {
+        document.getElementById("adminMsg").innerText = "❌ " + err.message;
+      }
+    }
+
+    // تحميل الكورسات
+    async function loadCourses() {
+      const list = document.getElementById("coursesList");
+      list.innerHTML = "";
+      const snapshot = await getDocs(collection(db, "courses"));
+      snapshot.forEach(doc => {
+        const c = doc.data();
+        list.innerHTML += `<div class="card"><h3>${c.title}</h3><p>${c.desc}</p></div>`;
+      });
+    }
+  </script>
 </body>
 </html>
