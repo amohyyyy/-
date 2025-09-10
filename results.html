@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>النتائج</title>
+  <link rel="stylesheet" href="results.css">
+</head>
+<body>
+  <div class="layout">
+
+    <!-- القائمة الجانبية -->
+    <aside class="sidebar">
+      <h2 class="logo">EduMath</h2>
+      <nav>
+        <ul>
+          <li><a href="courses.html">📚 الكورسات</a></li>
+          <li><a href="results.html" class="active">📊 النتائج</a></li>
+          <li><a href="profile.html">👤 بروفايل</a></li>
+          <li><a href="index.html" id="logoutBtn">🚪 تسجيل الخروج</a></li>
+        </ul>
+      </nav>
+    </aside>
+
+    <!-- المحتوى الرئيسي -->
+    <main class="content">
+      <header>
+        <h1>نتائجك 📊</h1>
+        <p>هنا تقدر تشوف درجاتك وجدول الترتيب العام.</p>
+      </header>
+
+      <!-- جدول النتائج -->
+      <section class="results-table">
+        <h2>درجات المواد</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>المادة</th>
+              <th>الدرجة</th>
+              <th>النسبة المئوية</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>التفاضل والتكامل</td>
+              <td>85</td>
+              <td>85%</td>
+            </tr>
+            <tr>
+              <td>الجبر</td>
+              <td>92</td>
+              <td>92%</td>
+            </tr>
+            <tr>
+              <td>الهندسة</td>
+              <td>78</td>
+              <td>78%</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- ترتيب الطلاب -->
+      <section class="leaderboard">
+        <h2>جدول الترتيب العام 🏆</h2>
+        <ol>
+          <li>أحمد محمد — 95%</li>
+          <li>سارة علي — 93%</li>
+          <li>محمود حسن — 90%</li>
+          <li>أنت — 85%</li>
+        </ol>
+      </section>
+    </main>
+  </div>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBvBlbWmFxN1t0Sv0TkWfcYndvgzq6499Y",
+      authDomain: "edu-platform-35476.firebaseapp.com",
+      projectId: "edu-platform-35476",
+      storageBucket: "edu-platform-35476.firebasestorage.app",
+      messagingSenderId: "823570222456",
+      appId: "1:823570222456:web:656afb19407d955448cc8d",
+      measurementId: "G-V7DZRJR57F"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+
+    // حماية الصفحة: لو المستخدم مش مسجل دخول يرجع لتسجيل الدخول
+    auth.onAuthStateChanged(user => {
+      if (!user) {
+        window.location.href = "index.html";
+      }
+    });
+
+    // زر تسجيل الخروج
+    document.getElementById("logoutBtn").onclick = async (e) => {
+      e.preventDefault();
+      await auth.signOut();
+      window.location.href = "index.html";
+    };
+  </script>
+</body>
+</html>
